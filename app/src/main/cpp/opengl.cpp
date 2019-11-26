@@ -24,14 +24,14 @@ float vertices[] = {
 //生成一个VBO对象，用一个id来表示
 unsigned int VBO;
 
-void generateVBO(){
+void generateVBO() {
     //生成一个VBO缓冲对象
-    glGenBuffers(1,&VBO);
+    glGenBuffers(1, &VBO);
 
     //OpenGL有很多缓冲对象，VBO的缓冲类型是GL_ARRAY_BUFFER
     //同一种类型的缓冲对象只能绑定一个id
     //将VBO绑定到GL_ARRAY_BUFFER类型上
-    glBindBuffer(GL_ARRAY_BUFFER,VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
     //当VBO被绑定到GL_ARRAY_BUFFER上时，所有操作GL_ARRAY_BUFFER的配置都是配置VBO了
 
@@ -41,12 +41,55 @@ void generateVBO(){
     //GL_STATIC_DRAW ：数据不会或几乎不会改变。
     //GL_DYNAMIC_DRAW：数据会被改变很多。
     //GL_STREAM_DRAW ：数据每次绘制时都会改变。
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices),vertices,GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 }
 
-void initVertexShader(){
-    const char* vShader = readFromAsset(aAssetManager,"");
+//动态编译顶点着色器源码
+//创建着色器对象，还是用id存储
+unsigned int vertexShaderId;
+
+void generateVertexShader() {
+    //创建shader
+    vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
+
+    const char *vShader = readFromAsset(aAssetManager, "triangle.vert");
+    //将着色器代码附着到着色器对象上
+    glShaderSource(vertexShaderId, 1, &vShader, nullptr);
+
+    //编译着色器代码
+    glCompileShader(vertexShaderId);
+
+    //检测是否编译成功
+    int success;
+    char infoLog[512];
+    glGetShaderiv(vertexShaderId, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(vertexShaderId, 512, nullptr, infoLog);
+        LOGE("opengl", "generateVertexShader 编译顶点着色器错误 %s", infoLog);
+    }
 }
+
+//动态编译片段着色器
+unsigned int fragmentShaderId;
+
+void generateFramgentShader(){
+    fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
+
+
+    const char *fShader = readFromAsset(aAssetManager, "triangle.glsl");
+    glShaderSource(fragmentShaderId,1,&fShader, nullptr);
+    glCompileShader(fragmentShaderId);
+
+    int success;
+    char infoLog[512];
+    glGetShaderiv(fragmentShaderId,GL_COMPILE_STATUS,&success);
+    if (!success){
+        glGetShaderInfoLog(fragmentShaderId,512, nullptr,infoLog);
+        LOGE("opengl", "generateVertexShader 编译片元着色器错误 %s", infoLog);
+    }
+}
+
+
 
 
 void onSurfaceChanged(int width, int height) {
