@@ -1,10 +1,14 @@
 
-#include "../../../../../../Library/Android/sdk/ndk/20.1.5948944/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include/jni.h"
 #include "utils.h"
 
 #include <android/log.h>
+#include <android/asset_manager.h>
+#include <android/asset_manager_jni.h>
 
 extern "C" {
+
+static AAssetManager *aAssetManager = NULL;
+
 /*
  * Class:     com_hujun_opengldemo_jni_Jni
  * Method:    stringFromJNI
@@ -36,5 +40,8 @@ JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_onSurfaceChanged
  */
 JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_onSurfaceCreated
         (JNIEnv *, jobject);
+
+JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_nativeSetAssetManager
+        (JNIEnv *, jobject,jobject);
 
 }

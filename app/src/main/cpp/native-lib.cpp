@@ -17,24 +17,30 @@ Java_com_hujun_opengldemo_jni_Jni_stringFromJNI(
 
 JNIEXPORT void JNICALL
 Java_com_hujun_opengldemo_jni_Jni_OnDrawFrame
-        (JNIEnv *env, jobject){
-    LOGD("Native","OnDrawFrame");
+        (JNIEnv *env, jobject) {
+//    LOGD("Native","OnDrawFrame");
     onDrawFrame();
 }
 
 
 JNIEXPORT void JNICALL
 Java_com_hujun_opengldemo_jni_Jni_onSurfaceChanged
-        (JNIEnv *, jobject, jint width, jint height){
-    LOGD("Native","onSurfaceChanged w=%d,h=%d",width,height);
-    onSurfaceChanged(width,height);
+        (JNIEnv *, jobject, jint width, jint height) {
+//    LOGD("Native","onSurfaceChanged w=%d,h=%d",width,height);
+    onSurfaceChanged(width, height);
 }
 
 JNIEXPORT void JNICALL
 Java_com_hujun_opengldemo_jni_Jni_onSurfaceCreated
-        (JNIEnv *, jobject){
-    LOGD("Native","onSurfaceCreated");
+        (JNIEnv *, jobject) {
+//    LOGD("Native","onSurfaceCreated");
     onSurfaceCreated();
+}
+
+
+JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_nativeSetAssetManager
+        (JNIEnv *env, jobject, jobject jassetManager) {
+    aAssetManager = AAssetManager_fromJava(env, jassetManager);
 }
 
 }

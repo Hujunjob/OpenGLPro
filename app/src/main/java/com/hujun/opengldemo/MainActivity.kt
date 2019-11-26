@@ -1,10 +1,9 @@
 package com.hujun.opengldemo
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import com.hujun.opengldemo.jni.Jni
-import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
     companion object{
@@ -17,6 +16,8 @@ class MainActivity : AppCompatActivity() {
 
         var s = Jni.stringFromJNI()
         Log.d(TAG, "onCreate: $s")
+
+        Jni.nativeSetAssetManager(assets)
     }
 
 }

@@ -1,5 +1,7 @@
 package com.hujun.opengldemo.jni
 
+import android.content.res.AssetManager
+
 /**
  * Created by junhu on 2019-11-26
  */
@@ -20,4 +22,6 @@ object Jni {
     external fun onSurfaceChanged(width: Int, height: Int)
 
     external fun onSurfaceCreated()
+
+    external fun nativeSetAssetManager(assetManager: AssetManager)
 }
