@@ -1,0 +1,23 @@
+package com.hujun.opengldemo.jni
+
+/**
+ * Created by junhu on 2019-11-26
+ */
+object Jni {
+    // Used to load the 'native-lib' library on application startup.
+    init {
+        System.loadLibrary("native-lib")
+    }
+
+    /**
+     * A native method that is implemented by the 'native-lib' native library,
+     * which is packaged with this application.
+     */
+    external fun stringFromJNI(): String
+
+    external fun OnDrawFrame()
+
+    external fun onSurfaceChanged(width: Int, height: Int)
+
+    external fun onSurfaceCreated()
+}
