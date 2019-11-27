@@ -11,6 +11,18 @@
 #include <sys/types.h>
 #include "../utils.h"
 
-uint linkProgram(const char*vShaderPath,const char* fShaderPath);
+class Shader{
+private:
+    uint mProgram;
+
+public:
+    void linkProgram(const char*vShaderPath,const char* fShaderPath);
+    //启动program
+    void use();
+
+    void setUnifom4f(const char* unifomName, float v1,float v2,float v3,float v4);
+};
+
+
 
 #endif //OPENGLDEMO_SHADER_H

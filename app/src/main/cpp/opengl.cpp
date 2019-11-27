@@ -15,6 +15,7 @@
 const char *vShaderPath = "vtriangle.vert";
 const char *fShaderPath = "ftriangle.glsl";
 
+Shader *shader;
 
 //定义顶点数组
 float vertices[] = {
@@ -54,8 +55,6 @@ float vertexAndColor[] = {
 //生成一个VBO对象，用一个id来表示
 unsigned int VBO;
 
-//着色器程序
-uint mProgram;
 
 //生成一个VAO对象
 uint VAO;
@@ -136,7 +135,7 @@ void generateEBO() {
 
 
 //查找uniform变量的位置
-GLint colorLocation;
+//GLint colorLocation;
 
 void changeUniform() {
     //根据时间变化的颜色
@@ -144,12 +143,13 @@ void changeUniform() {
     gettimeofday(&time, nullptr);
     double green = sin(time.tv_sec) * 0.5 + 0.5;
     //更新该uniform变量的值
-    glUniform4f(colorLocation, 0, green, 0, 1);
-
+//    glUniform4f(colorLocation, 0, green, 0, 1);
+    shader->setUnifom4f("ourColor", 0, green, 0, 1);
 }
 
 void drawTriangle() {
-    glUseProgram(mProgram);
+//    glUseProgram(mProgram);
+    shader->use();
 
 //    glDrawArrays(GL_TRIANGLES, 0, 3);
 //    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -198,15 +198,17 @@ void onSurfaceCreated() {
 //    generateEBO();
     VAO = generateVAO();
 
+    shader = new Shader();
+
     //链接我们自定义的着色器
-    mProgram = linkProgram(vShaderPath,fShaderPath);
-    if (mProgram == 0) {
-        LOGE("opengl", "onSurfaceCreated link fail");
-        return;
-    }
+    shader->linkProgram(vShaderPath, fShaderPath);
+//    if (mProgram == 0) {
+//        LOGE("opengl", "onSurfaceCreated link fail");
+//        return;
+//    }
 
     handleVBO();
-    colorLocation = glGetUniformLocation(mProgram, "ourColor");
+//    colorLocation = glGetUniformLocation(mProgram, "ourColor");
     //OpenGL ES里剔除了这个方法
 //    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }

@@ -4,8 +4,6 @@
 
 #include "Shader.h"
 
-
-
 //动态编译顶点着色器源码
 //创建着色器对象，还是用id存储
 unsigned int generateVertexShader(const char *shader) {
@@ -77,21 +75,21 @@ unsigned int generateProgram(uint vShader, uint fShader) {
     }
 }
 
-uint linkProgram(const char*vShaderPath,const char* fShaderPath) {
+void Shader::linkProgram(const char *vShaderPath, const char *fShaderPath) {
     auto vShader = generateVertexShader(vShaderPath);
     if (vShader == 0) {
         LOGD("opengl", "linkProgram 顶点着色器生成失败");
-        return 0;
+        return;
     }
     auto fShader = generateFramgentShader(fShaderPath);
     if (fShader == 0) {
         LOGD("opengl", "linkProgram 片元着色器生成失败");
-        return 0;
+        return;
     }
     auto program = generateProgram(vShader, fShader);
     if (program == 0) {
         LOGD("opengl", "linkProgram 链接失败");
-        return 0;
+        return;
     }
 
     //激活程序对象，这样以后渲染都是调用这个着色器程序了
@@ -100,6 +98,16 @@ uint linkProgram(const char*vShaderPath,const char* fShaderPath) {
     //删除
     glDeleteShader(vShader);
     glDeleteShader(fShader);
-
-    return program;
+    mProgram = program;
+//    return program;
 }
+
+void Shader::use() {
+    glUseProgram(mProgram);
+}
+
+void Shader::setUnifom4f(const char *unifomName, float v1, float v2, float v3, float v4) {
+    GLint location = glGetUniformLocation(mProgram,unifomName);
+    glUniform4f(location,v1,v2,v3,v4);
+}
+
