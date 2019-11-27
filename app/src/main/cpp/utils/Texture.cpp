@@ -20,10 +20,13 @@ void setTexture() {
 
 }
 
-uint loadTexture() {
+int count = 0;
+
+uint loadTexture(const char *texturePath) {
     //宽度、高度和颜色通道的个数
     int width, height, nrChannels;
-    unsigned char *data = stbi_load("/sdcard/container.jpg", &width, &height, &nrChannels, 0);
+    stbi_set_flip_vertically_on_load(true);
+    unsigned char *data = stbi_load(texturePath, &width, &height, &nrChannels, 0);
 
     if (!data) {
         LOGE("Texture", "加载纹理图像失败");
@@ -32,6 +35,12 @@ uint loadTexture() {
     uint texture;
     glGenTextures(1, &texture);
 
+    if (count == 0) {
+        glActiveTexture(GL_TEXTURE0);
+    } else {
+        glActiveTexture(GL_TEXTURE1);
+    }
+    count++;
     glBindTexture(GL_TEXTURE_2D, texture);
 
     // 为当前绑定的纹理对象设置环绕、过滤方式
@@ -56,7 +65,11 @@ uint loadTexture() {
     //border : 总是设为0
     //format 、type ： 源图片的格式和数据类型，原图是RGB格式，且加载为byte数组
     //pixels : 图像数据
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+
+    if (nrChannels == 4)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    else if (nrChannels == 3)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 
     //为当前绑定的纹理，自动生成多级渐远纹理
     glGenerateMipmap(GL_TEXTURE_2D);
@@ -64,5 +77,7 @@ uint loadTexture() {
     //释放图片数据
     stbi_image_free(data);
 
+    glBindTexture(GL_TEXTURE_2D, 0);
     return texture;
 }
+

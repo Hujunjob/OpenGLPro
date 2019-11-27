@@ -61,7 +61,8 @@ unsigned int VBO;
 //生成一个VAO对象
 uint VAO;
 
-uint texture;
+uint texture1;
+uint texture2;
 
 uint EBO;
 
@@ -169,11 +170,12 @@ void drawTriangle() {
 }
 
 void drawRectangle(){
+
+
     shader->use();
 
     glBindVertexArray(VAO);
 
-    glBindTexture(GL_TEXTURE_2D,texture);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
     glBindVertexArray(0);
@@ -215,20 +217,26 @@ void onSurfaceCreated() {
     //将数据灌入显存
 //    generateVBO();
 //    generateEBO();
+    shader = new Shader();
 
-    texture = loadTexture();
+    texture1 = loadTexture("/sdcard/container.jpg");
+    texture2 = loadTexture("/sdcard/awesomeface.png");
+
     VAO = generateVAO();
 
-    shader = new Shader();
 
     //链接我们自定义的着色器
     shader->linkProgram(vShaderPath, fShaderPath);
-//    if (mProgram == 0) {
-//        LOGE("opengl", "onSurfaceCreated link fail");
-//        return;
-//    }
 
-//    handleVBO();
+    //需要告诉着色器，每个纹理对应片元着色器里的哪个uniform sampler2D
+    shader->setUnifom1i("ourTexture",0);
+    shader->setUnifom1i("ourTexture2",1);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D,texture1);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D,texture2);
 
 //    colorLocation = glGetUniformLocation(mProgram, "ourColor");
     //OpenGL ES里剔除了这个方法

@@ -5,10 +5,12 @@
 #ifndef OPENGLDEMO_TEXTURE_H
 #define OPENGLDEMO_TEXTURE_H
 
+#pragma once
 #include "utils.h"
 #include "stb_image.h"
 
 
-uint loadTexture();
+
+uint loadTexture(const char* texturePath);
 
 #endif //OPENGLDEMO_TEXTURE_H

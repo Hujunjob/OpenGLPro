@@ -22,6 +22,8 @@ public:
     void use();
 
     void setUnifom4f(const char* unifomName, float v1,float v2,float v3,float v4);
+
+    void setUnifom1i(const char* uniformName,int i);
 };
 
 
