@@ -1,10 +1,10 @@
-#version 320 es
+#version 300 es
 
 precision lowp float;
 
 out vec4 FragColor;
 
-in vec3 ourColor; // 从顶点着色器传来的输入变量（名称相同、类型相同）
+//in vec3 ourColor; // 从顶点着色器传来的输入变量（名称相同、类型相同）
 in vec2 TexCoord;
 
 //默认为第一个纹理

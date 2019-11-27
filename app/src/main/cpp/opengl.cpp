@@ -15,7 +15,7 @@ const char *fShaderPath = "ftriangle.glsl";
 
 typedef glm::mat4 mat4;
 
-Shader *shader;
+Shader shader;
 
 int frameCount = 0;
 //定义顶点数组
@@ -41,6 +41,20 @@ float rectangleVertices[] = {
         -0.5f, 0.5f, 0.0f   // 左上角
 };
 
+//每个立方体位移
+glm::vec3 cubePositions[] = {
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(2.0f, 5.0f, -15.0f),
+        glm::vec3(-1.5f, -2.2f, -2.5f),
+        glm::vec3(-3.8f, -2.0f, -12.3f),
+        glm::vec3(2.4f, -0.4f, -3.5f),
+        glm::vec3(-1.7f, 3.0f, -7.5f),
+        glm::vec3(1.3f, -2.0f, -2.5f),
+        glm::vec3(1.5f, 2.0f, -2.5f),
+        glm::vec3(1.5f, 0.2f, -1.5f),
+        glm::vec3(-1.3f, 1.0f, -1.5f)
+};
+
 unsigned int indices[] = { // 注意索引从0开始!
         0, 1, 3, // 第一个三角形
         1, 2, 3  // 第二个三角形
@@ -55,32 +69,32 @@ float vertexAndColor[] = {
 };
 
 
-mat4 rotateByX(float angle){
+mat4 rotateByX(float angle) {
     mat4 mat = glm::mat4(1.0f);
-    mat = glm::rotate(mat,glm::radians(angle),glm::vec3(1.0f,0.0f,0.0f));
+    mat = glm::rotate(mat, glm::radians(angle), glm::vec3(1.0f, 0.0f, 0.0f));
     return mat;
 }
 
 
 //模型矩阵，绕X轴旋转55°，相当于平躺55°下来
-mat4 modelMatrix(){
+mat4 modelMatrix() {
     return rotateByX(-55.0f);
 }
 
 //观察矩阵，就是相机位置矩阵
-mat4 viewMatrix(){
+mat4 viewMatrix() {
     mat4 mat = glm::mat4(1.0f);
     //相机往前移动一段距离观测，相当于整个场景往后移动
-    mat = glm::translate(mat,glm::vec3(0.0f,0.0f,-3.0f));
+    mat = glm::translate(mat, glm::vec3(0.0f, 0.0f, -3.0f));
     return mat;
 }
 
-mat4 projectionMatrix(){
+mat4 projectionMatrix() {
     float fov = 45.0f;
-    float respect = 720.0f/1280.0f;
+    float respect = 720.0f / 1280.0f;
     float near = 0.1f;
     float far = 100.0f;
-    return glm::perspective(glm::radians(fov),respect,near,far);
+    return glm::perspective(glm::radians(fov), respect, near, far);
 }
 
 //顶点着色器会在GPU上创建内存，用于存储顶点数据
@@ -91,7 +105,6 @@ mat4 projectionMatrix(){
 //生成一个VBO对象，用一个id来表示
 unsigned int VBO;
 
-
 //生成一个VAO对象
 uint VAO;
 
@@ -99,6 +112,8 @@ uint texture1;
 uint texture2;
 
 uint EBO;
+
+Cube cube;
 
 void drawCube();
 
@@ -189,12 +204,12 @@ void changeUniform() {
     double green = sin(time.tv_sec) * 0.5 + 0.5;
     //更新该uniform变量的值
 //    glUniform4f(colorLocation, 0, green, 0, 1);
-    shader->setUnifom4f("ourColor", 0, green, 0, 1);
+    shader.setUnifom4f("ourColor", 0, green, 0, 1);
 }
 
 void drawTriangle() {
 //    glUseProgram(mProgram);
-    shader->use();
+    shader.use();
 
 //    glDrawArrays(GL_TRIANGLES, 0, 3);
 //    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -208,24 +223,10 @@ void drawTriangle() {
 
 glm::mat4 rotateAndScale() {
     glm::mat4 trans = glm::mat4(1);
-//    mat = glm::rotate(mat, glm::radians(90.0F), glm::vec3(0.0, 0.0, 1.0));
-//    mat = glm::scale(mat, glm::vec3(0.5, 0.5, 0.5));
-
-    struct timeval xTime;
-    gettimeofday(&xTime, nullptr);
-
-    long long xFactor = 1;
-    long long now = (long long)(( xFactor * xTime.tv_sec * 1000) + (xTime.tv_usec / 1000));
-
-//    time.tv_usec
-//    trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
     float angle = frameCount;
-//    LOGD("rotateAndScale","angle=%f",angle);
-    trans = glm::rotate(trans, glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f));
+    trans = glm::rotate(trans, glm::radians(angle), glm::vec3(0.5f, 1.0f, 0.0f));
     return trans;
 }
-
-
 
 
 glm::mat4 rotateAndScale2() {
@@ -237,7 +238,7 @@ glm::mat4 rotateAndScale2() {
     gettimeofday(&xTime, nullptr);
 
     long long xFactor = 1;
-    long long now = (long long)(( xFactor * xTime.tv_sec * 1000) + (xTime.tv_usec / 1000));
+    long long now = (long long) ((xFactor * xTime.tv_sec * 1000) + (xTime.tv_usec / 1000));
 
 //    time.tv_usec
     trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
@@ -249,16 +250,16 @@ glm::mat4 rotateAndScale2() {
 
 void drawRectangle() {
 
-    shader->use();
+    shader.use();
     glBindVertexArray(VAO);
 
 //    glm::mat4 trans = rotateAndScale();
 //    glm::mat4 trans = glm::mat4(1.0f);
-    shader->setMatrix4fv("transform", glm::value_ptr(rotateByX(-45.0f)));
+    shader.setMatrix4fv("transform", glm::value_ptr(rotateByX(-45.0f)));
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
     glm::mat4 trans2 = rotateAndScale2();
-//    shader->setMatrix4fv("transform", glm::value_ptr(trans2));
+//    shader.setMatrix4fv("transform", glm::value_ptr(trans2));
 //    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
     glBindVertexArray(0);
@@ -289,10 +290,10 @@ uint generateVAO() {
     return vao;
 }
 
-void initMatrix(){
-    shader->setMatrix4fv("model",glm::value_ptr(modelMatrix()));
-    shader->setMatrix4fv("view",glm::value_ptr(viewMatrix()));
-    shader->setMatrix4fv("projection",glm::value_ptr(projectionMatrix()));
+void initMatrix() {
+    shader.setMatrix4fv("model", glm::value_ptr(modelMatrix()));
+    shader.setMatrix4fv("view", glm::value_ptr(viewMatrix()));
+    shader.setMatrix4fv("projection", glm::value_ptr(projectionMatrix()));
 }
 
 
@@ -306,19 +307,21 @@ void onSurfaceCreated() {
     //将数据灌入显存
 //    generateVBO();
 //    generateEBO();
-    shader = new Shader();
+    shader = Shader();
 
     texture1 = loadTexture("/sdcard/container.jpg");
     texture2 = loadTexture("/sdcard/awesomeface.png");
 
-    VAO = generateVAO();
+//    VAO = generateVAO();
+
+    cube.create();
 
     //链接我们自定义的着色器
-    shader->linkProgram(vShaderPath, fShaderPath);
+    shader.linkProgram(vShaderPath, fShaderPath);
 
     //需要告诉着色器，每个纹理对应片元着色器里的哪个uniform sampler2D
-    shader->setUnifom1i("ourTexture", 0);
-    shader->setUnifom1i("ourTexture2", 1);
+    shader.setUnifom1i("ourTexture", 0);
+    shader.setUnifom1i("ourTexture2", 1);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture1);
@@ -327,8 +330,7 @@ void onSurfaceCreated() {
     glBindTexture(GL_TEXTURE_2D, texture2);
 
     initMatrix();
-
-//    testGLM();
+    glEnable(GL_DEPTH_TEST);
 //    colorLocation = glGetUniformLocation(mProgram, "ourColor");
     //OpenGL ES里剔除了这个方法
 //    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -337,12 +339,10 @@ void onSurfaceCreated() {
 
 void onDrawFrame() {
     frameCount++;
-//    if (frameCount % 4 != 0) {
-//        return;
-//    }
     glClearColor(0.2, 0.3, 0.3, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     LOGD("OpenGL", "onDrawFrame");
+
 //    drawTriangle();
 //    drawRectangle();
     drawCube();
@@ -350,8 +350,17 @@ void onDrawFrame() {
 }
 
 void drawCube() {
-    shader->use();
+    shader.use();
+    glm::mat4 trans2 = rotateAndScale();
+    shader.setMatrix4fv("transform", glm::value_ptr(trans2));
 
-
+    for (unsigned int i = 0; i < 10; i++) {
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, cubePositions[i]);
+        float angle = 20.0f * i;
+        model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+        shader.setMatrix4fv("model", glm::value_ptr(model));
+        cube.draw();
+    }
 }
 

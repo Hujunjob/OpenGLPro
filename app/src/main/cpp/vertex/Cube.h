@@ -5,15 +5,20 @@
 #ifndef OPENGLDEMO_CUBE_H
 #define OPENGLDEMO_CUBE_H
 
-
+#pragma once
 #include "../utils/utils.h"
 
 class Cube {
 private:
-    float cubeVertices[];
     uint VBO;
+    uint VAO;
+    void generateVBO();
+
 public:
+    Cube();
+    ~Cube();
     void create();
+    void draw();
 };
 
 
