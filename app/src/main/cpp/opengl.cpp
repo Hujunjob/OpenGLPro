@@ -5,15 +5,13 @@
 
 #include "opengl.h"
 #include "utils/Texture.h"
-#include "glm/vec4.hpp"
-#include "glm/ext.hpp"
 #include "vertex/Cube.h"
 
 
 const char *vShaderPath = "vtriangle.vert";
 const char *fShaderPath = "ftriangle.glsl";
 
-typedef glm::mat4 mat4;
+
 
 Shader shader;
 
