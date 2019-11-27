@@ -192,16 +192,37 @@ glm::mat4 rotateAndScale() {
     return trans;
 }
 
+
+glm::mat4 rotateAndScale2() {
+    glm::mat4 trans = glm::mat4(1);
+//    mat = glm::rotate(mat, glm::radians(90.0F), glm::vec3(0.0, 0.0, 1.0));
+//    mat = glm::scale(mat, glm::vec3(0.5, 0.5, 0.5));
+
+    struct timeval xTime;
+    gettimeofday(&xTime, nullptr);
+
+    long long xFactor = 1;
+    long long now = (long long)(( xFactor * xTime.tv_sec * 1000) + (xTime.tv_usec / 1000));
+
+//    time.tv_usec
+    trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+    float angle = frameCount;
+//    LOGD("rotateAndScale","angle=%f",angle);
+    trans = glm::rotate(trans, glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f));
+    return trans;
+}
+
 void drawRectangle() {
 
-
     shader->use();
-
     glBindVertexArray(VAO);
 
     glm::mat4 trans = rotateAndScale();
     shader->setMatrix4fv("transform", glm::value_ptr(trans));
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
+    glm::mat4 trans2 = rotateAndScale2();
+    shader->setMatrix4fv("transform", glm::value_ptr(trans2));
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
     glBindVertexArray(0);
@@ -218,14 +239,14 @@ uint generateVAO() {
 
     //绑定VAO
     glBindVertexArray(vao);
-    //生成VAO
+
+    //生成VBO
     generateVBO();
     //告诉OpenGL如何解析VBO并启动VBO
     handleVBO();
 
     //生成绑定EBO
     generateEBO();
-
 
     //解绑VAO
     glBindVertexArray(0);
