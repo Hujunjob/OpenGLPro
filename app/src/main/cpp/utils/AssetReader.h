@@ -4,10 +4,12 @@
 
 #ifndef OPENGLDEMO_ASSETREADER_H
 #define OPENGLDEMO_ASSETREADER_H
-
+#pragma once
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 
-const char* readFromAsset(AAssetManager *manager,const char*);
+extern AAssetManager *aAssetManager;
+
+const char* readFromAsset(const char*);
 
 #endif //OPENGLDEMO_ASSETREADER_H

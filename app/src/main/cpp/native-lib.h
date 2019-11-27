@@ -7,7 +7,6 @@
 
 extern "C" {
 
-static AAssetManager *aAssetManager = NULL;
 
 /*
  * Class:     com_hujun_opengldemo_jni_Jni

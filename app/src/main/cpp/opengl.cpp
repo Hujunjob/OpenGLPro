@@ -52,7 +52,7 @@ void generateVertexShader() {
     //创建shader
     vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
 
-    const char *vShader = readFromAsset(aAssetManager, "triangle.vert");
+    const char *vShader = readFromAsset( "triangle.vert");
     //将着色器代码附着到着色器对象上
     glShaderSource(vertexShaderId, 1, &vShader, nullptr);
 
@@ -76,7 +76,7 @@ void generateFramgentShader(){
     fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
 
 
-    const char *fShader = readFromAsset(aAssetManager, "triangle.glsl");
+    const char *fShader = readFromAsset("triangle.glsl");
     glShaderSource(fragmentShaderId,1,&fShader, nullptr);
     glCompileShader(fragmentShaderId);
 
@@ -100,6 +100,7 @@ void onSurfaceChanged(int width, int height) {
 void onSurfaceCreated() {
     LOGD("OpenGL", "onSurfaceCreated");
     generateVBO();
+    const char *vShader = readFromAsset("vtriangle.vert");
 }
 
 void onDrawFrame() {

@@ -3,7 +3,7 @@
 
 #include "native-lib.h"
 #include "opengl.h"
-
+#include "utils/AssetReader.h"
 
 extern "C" {
 JNIEXPORT jstring JNICALL
