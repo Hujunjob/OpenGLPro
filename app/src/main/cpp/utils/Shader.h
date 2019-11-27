@@ -9,7 +9,6 @@
 #include "AssetReader.h"
 #include <GLES3/gl3.h>
 #include <GLES3/gl3ext.h>
-#include <sys/types.h>
 #include "utils.h"
 
 class Shader{

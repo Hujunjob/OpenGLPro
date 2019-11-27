@@ -13,13 +13,25 @@ out vec3 ourColor;
 
 out vec2 TexCoord;
 
-uniform mat4 transform;
+//外面传入的旋转矩阵
+//uniform mat4 transform;
+
+//Model 矩阵
+uniform mat4 model;
+
+//View 矩阵
+uniform mat4 view;
+
+//投影矩阵
+uniform mat4 projection;
 
 void main() {
 //    gl_Position = vec4(aPos, 1.0);
     //传递变换矩阵进来
 
-    gl_Position = transform * vec4(aPos, 1.0);
+//    gl_Position = transform * vec4(aPos, 1.0);
+
+    gl_Position = projection * view * model * vec4(aPos,1.0);
 
 //    vertexColor = vec4(0.5,0.0,0.0,1.0);
     ourColor = aColor;

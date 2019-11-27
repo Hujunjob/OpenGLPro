@@ -7,10 +7,13 @@
 #include "utils/Texture.h"
 #include "glm/vec4.hpp"
 #include "glm/ext.hpp"
+#include "vertex/Cube.h"
 
 
 const char *vShaderPath = "vtriangle.vert";
 const char *fShaderPath = "ftriangle.glsl";
+
+typedef glm::mat4 mat4;
 
 Shader *shader;
 
@@ -52,6 +55,34 @@ float vertexAndColor[] = {
 };
 
 
+mat4 rotateByX(float angle){
+    mat4 mat = glm::mat4(1.0f);
+    mat = glm::rotate(mat,glm::radians(angle),glm::vec3(1.0f,0.0f,0.0f));
+    return mat;
+}
+
+
+//模型矩阵，绕X轴旋转55°，相当于平躺55°下来
+mat4 modelMatrix(){
+    return rotateByX(-55.0f);
+}
+
+//观察矩阵，就是相机位置矩阵
+mat4 viewMatrix(){
+    mat4 mat = glm::mat4(1.0f);
+    //相机往前移动一段距离观测，相当于整个场景往后移动
+    mat = glm::translate(mat,glm::vec3(0.0f,0.0f,-3.0f));
+    return mat;
+}
+
+mat4 projectionMatrix(){
+    float fov = 45.0f;
+    float respect = 720.0f/1280.0f;
+    float near = 0.1f;
+    float far = 100.0f;
+    return glm::perspective(glm::radians(fov),respect,near,far);
+}
+
 //顶点着色器会在GPU上创建内存，用于存储顶点数据
 //需要配置OpenGL如何解释这些内存，指定如何发送给显卡
 //通过顶点缓冲对象VBO来管理这个内存，在GPU内存（显存）中存储大量顶点
@@ -68,6 +99,8 @@ uint texture1;
 uint texture2;
 
 uint EBO;
+
+void drawCube();
 
 void generateVBO() {
     //生成一个VBO缓冲对象
@@ -193,6 +226,8 @@ glm::mat4 rotateAndScale() {
 }
 
 
+
+
 glm::mat4 rotateAndScale2() {
     glm::mat4 trans = glm::mat4(1);
 //    mat = glm::rotate(mat, glm::radians(90.0F), glm::vec3(0.0, 0.0, 1.0));
@@ -217,13 +252,14 @@ void drawRectangle() {
     shader->use();
     glBindVertexArray(VAO);
 
-    glm::mat4 trans = rotateAndScale();
-    shader->setMatrix4fv("transform", glm::value_ptr(trans));
+//    glm::mat4 trans = rotateAndScale();
+//    glm::mat4 trans = glm::mat4(1.0f);
+    shader->setMatrix4fv("transform", glm::value_ptr(rotateByX(-45.0f)));
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
     glm::mat4 trans2 = rotateAndScale2();
-    shader->setMatrix4fv("transform", glm::value_ptr(trans2));
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+//    shader->setMatrix4fv("transform", glm::value_ptr(trans2));
+//    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
     glBindVertexArray(0);
 }
@@ -253,12 +289,10 @@ uint generateVAO() {
     return vao;
 }
 
-void testGLM() {
-    glm::vec4 vec(1, 0, 0, 1);
-    glm::mat4 trans = glm::mat4(1);
-    trans = glm::translate(trans, glm::vec3(1, 1, 0));
-    vec = trans * vec;
-    LOGD("testGLM", "vec x=%f,y=%f,z=%f", vec.x, vec.y, vec.z);
+void initMatrix(){
+    shader->setMatrix4fv("model",glm::value_ptr(modelMatrix()));
+    shader->setMatrix4fv("view",glm::value_ptr(viewMatrix()));
+    shader->setMatrix4fv("projection",glm::value_ptr(projectionMatrix()));
 }
 
 
@@ -292,6 +326,7 @@ void onSurfaceCreated() {
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, texture2);
 
+    initMatrix();
 
 //    testGLM();
 //    colorLocation = glGetUniformLocation(mProgram, "ourColor");
@@ -309,6 +344,14 @@ void onDrawFrame() {
     glClear(GL_COLOR_BUFFER_BIT);
     LOGD("OpenGL", "onDrawFrame");
 //    drawTriangle();
-    drawRectangle();
+//    drawRectangle();
+    drawCube();
+
+}
+
+void drawCube() {
+    shader->use();
+
+
 }
 
