@@ -20,7 +20,6 @@ void setTexture() {
 
 }
 
-int count = 0;
 
 uint loadTexture(const char *texturePath) {
     //宽度、高度和颜色通道的个数
@@ -35,12 +34,6 @@ uint loadTexture(const char *texturePath) {
     uint texture;
     glGenTextures(1, &texture);
 
-    if (count == 0) {
-        glActiveTexture(GL_TEXTURE0);
-    } else {
-        glActiveTexture(GL_TEXTURE1);
-    }
-    count++;
     glBindTexture(GL_TEXTURE_2D, texture);
 
     // 为当前绑定的纹理对象设置环绕、过滤方式

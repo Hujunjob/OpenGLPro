@@ -9,8 +9,6 @@ import javax.microedition.khronos.opengles.GL10
 class MyRender(var myGLSurface: MyGLSurface) : GLSurfaceView.Renderer {
     companion object{
         private val TAG = this::class.java.name.replace("${'$'}Companion","").split(".").last()
-        
-        
     }
     override fun onDrawFrame(p0: GL10?) {
 //        Log.d(TAG, "onDrawFrame: ")

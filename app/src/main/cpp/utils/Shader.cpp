@@ -116,3 +116,7 @@ void Shader::setUnifom1i(const char *uniformName, int i) {
     glUniform1i(location,i);
 }
 
+void Shader::setMatrix4fv(const char *uniform,const GLfloat *value) {
+    GLint location = glGetUniformLocation(mProgram,uniform);
+    glUniformMatrix4fv(location,1,GL_FALSE,value);
+}

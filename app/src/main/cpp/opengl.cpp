@@ -5,6 +5,8 @@
 
 #include "opengl.h"
 #include "utils/Texture.h"
+#include "glm/vec4.hpp"
+#include "glm/ext.hpp"
 
 
 const char *vShaderPath = "vtriangle.vert";
@@ -12,6 +14,7 @@ const char *fShaderPath = "ftriangle.glsl";
 
 Shader *shader;
 
+int frameCount = 0;
 //定义顶点数组
 float vertices[] = {
         -0.5f, -0.5f, 0.0f,
@@ -21,10 +24,10 @@ float vertices[] = {
 
 float verticesTexture[] = {
 //     ---- 位置 ----       ---- 颜色 ----     - 纹理坐标 -
-        0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // 右上
-        0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // 右下
-        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // 左下
-        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // 左上
+        0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,   // 右上
+        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,   // 右下
+        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,   // 左下
+        -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f    // 左上
 };
 
 //只存储4个点，由索引指定绘制的顺序
@@ -119,7 +122,8 @@ void handleVBO() {
                           (void *) (3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
+                          (void *) (6 * sizeof(float)));
     glEnableVertexAttribArray(2);
 }
 
@@ -169,12 +173,34 @@ void drawTriangle() {
 //    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void drawRectangle(){
+glm::mat4 rotateAndScale() {
+    glm::mat4 trans = glm::mat4(1);
+//    mat = glm::rotate(mat, glm::radians(90.0F), glm::vec3(0.0, 0.0, 1.0));
+//    mat = glm::scale(mat, glm::vec3(0.5, 0.5, 0.5));
+
+    struct timeval xTime;
+    gettimeofday(&xTime, nullptr);
+
+    long long xFactor = 1;
+    long long now = (long long)(( xFactor * xTime.tv_sec * 1000) + (xTime.tv_usec / 1000));
+
+//    time.tv_usec
+//    trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+    float angle = frameCount;
+//    LOGD("rotateAndScale","angle=%f",angle);
+    trans = glm::rotate(trans, glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f));
+    return trans;
+}
+
+void drawRectangle() {
 
 
     shader->use();
 
     glBindVertexArray(VAO);
+
+    glm::mat4 trans = rotateAndScale();
+    shader->setMatrix4fv("transform", glm::value_ptr(trans));
 
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -206,6 +232,14 @@ uint generateVAO() {
     return vao;
 }
 
+void testGLM() {
+    glm::vec4 vec(1, 0, 0, 1);
+    glm::mat4 trans = glm::mat4(1);
+    trans = glm::translate(trans, glm::vec3(1, 1, 0));
+    vec = trans * vec;
+    LOGD("testGLM", "vec x=%f,y=%f,z=%f", vec.x, vec.y, vec.z);
+}
+
 
 void onSurfaceChanged(int width, int height) {
     glViewport(0, 0, width, height);
@@ -224,29 +258,36 @@ void onSurfaceCreated() {
 
     VAO = generateVAO();
 
-
     //链接我们自定义的着色器
     shader->linkProgram(vShaderPath, fShaderPath);
 
     //需要告诉着色器，每个纹理对应片元着色器里的哪个uniform sampler2D
-    shader->setUnifom1i("ourTexture",0);
-    shader->setUnifom1i("ourTexture2",1);
+    shader->setUnifom1i("ourTexture", 0);
+    shader->setUnifom1i("ourTexture2", 1);
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D,texture1);
+    glBindTexture(GL_TEXTURE_2D, texture1);
 
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D,texture2);
+    glBindTexture(GL_TEXTURE_2D, texture2);
 
+
+//    testGLM();
 //    colorLocation = glGetUniformLocation(mProgram, "ourColor");
     //OpenGL ES里剔除了这个方法
 //    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
+
 void onDrawFrame() {
+    frameCount++;
+//    if (frameCount % 4 != 0) {
+//        return;
+//    }
     glClearColor(0.2, 0.3, 0.3, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
     LOGD("OpenGL", "onDrawFrame");
 //    drawTriangle();
     drawRectangle();
 }
+
