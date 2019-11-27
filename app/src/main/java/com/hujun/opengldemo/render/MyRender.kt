@@ -6,7 +6,7 @@ import com.hujun.opengldemo.jni.Jni
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
-class MyRender(myGLSurface: MyGLSurface) : GLSurfaceView.Renderer {
+class MyRender(var myGLSurface: MyGLSurface) : GLSurfaceView.Renderer {
     companion object{
         private val TAG = this::class.java.name.replace("${'$'}Companion","").split(".").last()
         
@@ -15,6 +15,7 @@ class MyRender(myGLSurface: MyGLSurface) : GLSurfaceView.Renderer {
     override fun onDrawFrame(p0: GL10?) {
 //        Log.d(TAG, "onDrawFrame: ")
         Jni.OnDrawFrame()
+//        myGLSurface.requestRender()
     }
 
     override fun onSurfaceChanged(p0: GL10?, width: Int, height: Int) {

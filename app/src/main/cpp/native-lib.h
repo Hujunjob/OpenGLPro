@@ -7,7 +7,6 @@
 
 extern "C" {
 
-
 /*
  * Class:     com_hujun_opengldemo_jni_Jni
  * Method:    stringFromJNI

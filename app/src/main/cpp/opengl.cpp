@@ -5,9 +5,12 @@
 #include <android/log.h>
 #include <GLES3/gl3.h>
 #include <GLES3/gl3ext.h>
+#include <sys/time.h>
+#include <tgmath.h>
 #include "opengl.h"
 #include "native-lib.h"
-#include "utils/AssetReader.h"
+#include "utils/Shader.h"
+
 
 const char *vShaderPath = "vtriangle.vert";
 const char *fShaderPath = "ftriangle.glsl";
@@ -32,6 +35,14 @@ float rectangleVertices[] = {
 unsigned int indices[] = { // 注意索引从0开始!
         0, 1, 3, // 第一个三角形
         1, 2, 3  // 第二个三角形
+};
+
+//位置和颜色全放在一个数组里
+float vertexAndColor[] = {
+        // 位置              // 颜色
+        0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,   // 右下
+        -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,   // 左下
+        0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f    // 顶部
 };
 
 
@@ -68,107 +79,10 @@ void generateVBO() {
     //GL_STATIC_DRAW ：数据不会或几乎不会改变。
     //GL_DYNAMIC_DRAW：数据会被改变很多。
     //GL_STREAM_DRAW ：数据每次绘制时都会改变。
-    glBufferData(GL_ARRAY_BUFFER, sizeof(rectangleVertices), rectangleVertices, GL_STATIC_DRAW);
+//    glBufferData(GL_ARRAY_BUFFER, sizeof(rectangleVertices), rectangleVertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexAndColor), vertexAndColor, GL_STATIC_DRAW);
 
 //    glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
-//动态编译顶点着色器源码
-//创建着色器对象，还是用id存储
-unsigned int generateVertexShader(const char *shader) {
-    unsigned int vertexShaderId = 0;
-    //创建shader
-    vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
-
-    const char *vShader = readFromAsset(shader);
-    //将着色器代码附着到着色器对象上
-    glShaderSource(vertexShaderId, 1, &vShader, nullptr);
-
-    //编译着色器代码
-    glCompileShader(vertexShaderId);
-
-    //检测是否编译成功
-    int success;
-    char infoLog[512];
-    glGetShaderiv(vertexShaderId, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(vertexShaderId, 512, nullptr, infoLog);
-        LOGE("opengl", "generateVertexShader 编译顶点着色器错误 %s", infoLog);
-    }
-    return vertexShaderId;
-}
-
-//动态编译片段着色器
-unsigned int generateFramgentShader(const char *shader) {
-    unsigned int fragmentShaderId = 0;
-    fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
-
-
-    const char *fShader = readFromAsset(shader);
-    glShaderSource(fragmentShaderId, 1, &fShader, nullptr);
-    glCompileShader(fragmentShaderId);
-
-    int success;
-    char infoLog[512];
-    glGetShaderiv(fragmentShaderId, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(fragmentShaderId, 512, nullptr, infoLog);
-        LOGE("opengl", "generateVertexShader 编译片元着色器错误 %s", infoLog);
-    }
-    return fragmentShaderId;
-}
-
-//着色器程序是多个着色器合并后并最终链接在一起完成的版本
-//链接多个着色器，会把一个着色器的输出当做另一个着色器的输入，如果输出输入不匹配，则会链接失败
-
-unsigned int generateProgram(uint vShader, uint fShader) {
-    //创建 --> 附着 --> 链接
-    uint program = glCreateProgram();
-
-    glAttachShader(program, vShader);
-    glAttachShader(program, fShader);
-
-    glLinkProgram(program);
-
-    //检测
-    int success;
-    glGetProgramiv(program, GL_LINK_STATUS, &success);
-    if (!success) {
-        char info[512];
-        glGetProgramInfoLog(program, 512, nullptr, info);
-        LOGE("opengl", "链接程序错误 %s", info);
-        return 0;
-    } else {
-        LOGD("opengl", "链接成功");
-        return program;
-    }
-}
-
-uint linkProgram() {
-    auto vShader = generateVertexShader(vShaderPath);
-    if (vShader == 0) {
-        LOGD("opengl", "linkProgram 顶点着色器生成失败");
-        return 0;
-    }
-    auto fShader = generateFramgentShader(fShaderPath);
-    if (fShader == 0) {
-        LOGD("opengl", "linkProgram 片元着色器生成失败");
-        return 0;
-    }
-    auto program = generateProgram(vShader, fShader);
-    if (program == 0) {
-        LOGD("opengl", "linkProgram 链接失败");
-        return 0;
-    }
-
-    //激活程序对象，这样以后渲染都是调用这个着色器程序了
-    glUseProgram(program);
-
-    //删除
-    glDeleteShader(vShader);
-    glDeleteShader(fShader);
-
-    return program;
 }
 
 
@@ -189,9 +103,17 @@ void handleVBO() {
 //    第五个参数是步长（Stride），指定在连续的顶点属性之间的间隔。
 //
 //    第六个参数表示我们的位置数据在缓冲区起始位置的偏移量。
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+//    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
     //以上面的索引值0作为参数，启动顶点属性
+//    glEnableVertexAttribArray(0);
+
+//有两个属性需要赋值
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), nullptr);
     glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+                          (void *) (3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 }
 
 //矩形由2个三角形组成，需要6个点。但是有两个点重复了，浪费存储空间
@@ -212,13 +134,29 @@ void generateEBO() {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 }
 
+
+//查找uniform变量的位置
+GLint colorLocation;
+
+void changeUniform() {
+    //根据时间变化的颜色
+    struct timeval time;
+    gettimeofday(&time, nullptr);
+    double green = sin(time.tv_sec) * 0.5 + 0.5;
+    //更新该uniform变量的值
+    glUniform4f(colorLocation, 0, green, 0, 1);
+
+}
+
 void drawTriangle() {
     glUseProgram(mProgram);
 
 //    glDrawArrays(GL_TRIANGLES, 0, 3);
 //    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+//    changeUniform();
+//    glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
     glBindVertexArray(0);
 //    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
@@ -240,7 +178,7 @@ uint generateVAO() {
     handleVBO();
 
     //生成绑定EBO
-    generateEBO();
+//    generateEBO();
 
     //解绑VAO
     glBindVertexArray(0);
@@ -261,13 +199,14 @@ void onSurfaceCreated() {
     VAO = generateVAO();
 
     //链接我们自定义的着色器
-    mProgram = linkProgram();
+    mProgram = linkProgram(vShaderPath,fShaderPath);
     if (mProgram == 0) {
         LOGE("opengl", "onSurfaceCreated link fail");
         return;
     }
 
     handleVBO();
+    colorLocation = glGetUniformLocation(mProgram, "ourColor");
     //OpenGL ES里剔除了这个方法
 //    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }

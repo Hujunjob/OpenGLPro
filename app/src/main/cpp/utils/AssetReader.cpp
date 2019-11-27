@@ -1,7 +1,6 @@
 //
 // Created by hu jun on 2019-11-26.
 //
-#pragma once
 #include <cstdlib>
 #include "AssetReader.h"
 #include "../utils.h"
