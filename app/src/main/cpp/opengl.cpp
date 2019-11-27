@@ -3,8 +3,8 @@
 //
 
 #include <android/log.h>
-#include <GLES2/gl2.h>
-#include <GLES2/gl2ext.h>
+#include <GLES3/gl3.h>
+#include <GLES3/gl3ext.h>
 #include "opengl.h"
 #include "native-lib.h"
 #include "utils/AssetReader.h"
@@ -46,13 +46,12 @@ void generateVBO() {
 
 //动态编译顶点着色器源码
 //创建着色器对象，还是用id存储
-unsigned int vertexShaderId;
-
-void generateVertexShader() {
+unsigned int generateVertexShader() {
+    unsigned int vertexShaderId = 0;
     //创建shader
     vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
 
-    const char *vShader = readFromAsset( "triangle.vert");
+    const char *vShader = readFromAsset("vtriangle.vert");
     //将着色器代码附着到着色器对象上
     glShaderSource(vertexShaderId, 1, &vShader, nullptr);
 
@@ -67,29 +66,73 @@ void generateVertexShader() {
         glGetShaderInfoLog(vertexShaderId, 512, nullptr, infoLog);
         LOGE("opengl", "generateVertexShader 编译顶点着色器错误 %s", infoLog);
     }
+    return vertexShaderId;
 }
 
 //动态编译片段着色器
-unsigned int fragmentShaderId;
-
-void generateFramgentShader(){
+unsigned int generateFramgentShader() {
+    unsigned int fragmentShaderId = 0;
     fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
 
 
-    const char *fShader = readFromAsset("triangle.glsl");
-    glShaderSource(fragmentShaderId,1,&fShader, nullptr);
+    const char *fShader = readFromAsset("ftriangle.glsl");
+    glShaderSource(fragmentShaderId, 1, &fShader, nullptr);
     glCompileShader(fragmentShaderId);
 
     int success;
     char infoLog[512];
-    glGetShaderiv(fragmentShaderId,GL_COMPILE_STATUS,&success);
-    if (!success){
-        glGetShaderInfoLog(fragmentShaderId,512, nullptr,infoLog);
+    glGetShaderiv(fragmentShaderId, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(fragmentShaderId, 512, nullptr, infoLog);
         LOGE("opengl", "generateVertexShader 编译片元着色器错误 %s", infoLog);
+    }
+    return fragmentShaderId;
+}
+
+//着色器程序是多个着色器合并后并最终链接在一起完成的版本
+//链接多个着色器，会把一个着色器的输出当做另一个着色器的输入，如果输出输入不匹配，则会链接失败
+
+unsigned int generateProgram(uint vShader, uint fShader) {
+    //创建 --> 附着 --> 链接
+    uint program = glCreateProgram();
+
+    glAttachShader(program, vShader);
+    glAttachShader(program, fShader);
+
+    glLinkProgram(program);
+
+    //检测
+    int success;
+    glGetProgramiv(program, GL_LINK_STATUS, &success);
+    if (!success) {
+        char info[512];
+        glGetProgramInfoLog(program, 512, nullptr, info);
+        LOGE("opengl", "链接程序错误 %s", info);
+        return 0;
+    } else {
+        LOGD("opengl", "链接成功");
+        return program;
     }
 }
 
-
+int linkProgram() {
+    auto vShader = generateVertexShader();
+    if (vShader == 0) {
+        LOGD("opengl", "linkProgram 顶点着色器生成失败");
+        return -1;
+    }
+    auto fShader = generateFramgentShader();
+    if (fShader == 0) {
+        LOGD("opengl", "linkProgram 片元着色器生成失败");
+        return -1;
+    }
+    auto program = generateProgram(vShader, fShader);
+    if (program == 0) {
+        LOGD("opengl", "linkProgram 链接失败");
+        return -1;
+    }
+    return program;
+}
 
 
 void onSurfaceChanged(int width, int height) {
@@ -100,7 +143,8 @@ void onSurfaceChanged(int width, int height) {
 void onSurfaceCreated() {
     LOGD("OpenGL", "onSurfaceCreated");
     generateVBO();
-    const char *vShader = readFromAsset("vtriangle.vert");
+    linkProgram();
+
 }
 
 void onDrawFrame() {
