@@ -7,6 +7,8 @@
 #pragma once
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
+#include <cstdlib>
+#include "utils.h"
 
 extern AAssetManager *aAssetManager;
 

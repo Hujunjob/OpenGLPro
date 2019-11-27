@@ -2,14 +2,9 @@
 // Created by JUN HU on 2019-11-26.
 //
 
-#include <android/log.h>
-#include <GLES3/gl3.h>
-#include <GLES3/gl3ext.h>
-#include <sys/time.h>
-#include <tgmath.h>
+
 #include "opengl.h"
-#include "native-lib.h"
-#include "utils/Shader.h"
+#include "utils/Texture.h"
 
 
 const char *vShaderPath = "vtriangle.vert";
@@ -24,6 +19,13 @@ float vertices[] = {
         0.0f, 0.5f, 0.0f
 };
 
+float verticesTexture[] = {
+//     ---- 位置 ----       ---- 颜色 ----     - 纹理坐标 -
+        0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // 右上
+        0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // 右下
+        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // 左下
+        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // 左上
+};
 
 //只存储4个点，由索引指定绘制的顺序
 float rectangleVertices[] = {
@@ -59,6 +61,8 @@ unsigned int VBO;
 //生成一个VAO对象
 uint VAO;
 
+uint texture;
+
 uint EBO;
 
 void generateVBO() {
@@ -79,7 +83,7 @@ void generateVBO() {
     //GL_DYNAMIC_DRAW：数据会被改变很多。
     //GL_STREAM_DRAW ：数据每次绘制时都会改变。
 //    glBufferData(GL_ARRAY_BUFFER, sizeof(rectangleVertices), rectangleVertices, GL_STATIC_DRAW);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexAndColor), vertexAndColor, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesTexture), verticesTexture, GL_STATIC_DRAW);
 
 //    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
@@ -107,12 +111,15 @@ void handleVBO() {
 //    glEnableVertexAttribArray(0);
 
 //有两个属性需要赋值
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), nullptr);
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
                           (void *) (3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 }
 
 //矩形由2个三角形组成，需要6个点。但是有两个点重复了，浪费存储空间
@@ -161,6 +168,17 @@ void drawTriangle() {
 //    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
+void drawRectangle(){
+    shader->use();
+
+    glBindVertexArray(VAO);
+
+    glBindTexture(GL_TEXTURE_2D,texture);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+    glBindVertexArray(0);
+}
+
 
 //以上绑定了一个三角形，但是如果我们有几十几百个物体，这样绑定和配置就太麻烦了
 //使用顶点数组对象VAO Vertex Array Object，可以保存所有的VBO对象和配置
@@ -178,7 +196,8 @@ uint generateVAO() {
     handleVBO();
 
     //生成绑定EBO
-//    generateEBO();
+    generateEBO();
+
 
     //解绑VAO
     glBindVertexArray(0);
@@ -196,6 +215,8 @@ void onSurfaceCreated() {
     //将数据灌入显存
 //    generateVBO();
 //    generateEBO();
+
+    texture = loadTexture();
     VAO = generateVAO();
 
     shader = new Shader();
@@ -207,7 +228,8 @@ void onSurfaceCreated() {
 //        return;
 //    }
 
-    handleVBO();
+//    handleVBO();
+
 //    colorLocation = glGetUniformLocation(mProgram, "ourColor");
     //OpenGL ES里剔除了这个方法
 //    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -217,5 +239,6 @@ void onDrawFrame() {
     glClearColor(0.2, 0.3, 0.3, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
     LOGD("OpenGL", "onDrawFrame");
-    drawTriangle();
+//    drawTriangle();
+    drawRectangle();
 }

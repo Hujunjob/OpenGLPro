@@ -21,6 +21,8 @@ add_library( # Sets the name of the library.
         opengl.cpp
         utils/AssetReader.cpp
         utils/Shader.cpp
+        utils/Texture.cpp
+        utils/stb_image.cpp
         )
 
 # Searches for a specified prebuilt library and stores the path as a

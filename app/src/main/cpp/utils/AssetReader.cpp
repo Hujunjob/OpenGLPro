@@ -1,9 +1,8 @@
 //
 // Created by hu jun on 2019-11-26.
 //
-#include <cstdlib>
+
 #include "AssetReader.h"
-#include "../utils.h"
 
 AAssetManager *aAssetManager = nullptr;
 

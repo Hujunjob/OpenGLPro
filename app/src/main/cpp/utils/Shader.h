@@ -5,11 +5,12 @@
 #ifndef OPENGLDEMO_SHADER_H
 #define OPENGLDEMO_SHADER_H
 
+#pragma once
 #include "AssetReader.h"
 #include <GLES3/gl3.h>
 #include <GLES3/gl3ext.h>
 #include <sys/types.h>
-#include "../utils.h"
+#include "utils.h"
 
 class Shader{
 private:

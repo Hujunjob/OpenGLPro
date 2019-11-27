@@ -5,7 +5,10 @@
 #ifndef OPENGLDEMO_UTILS_H
 #define OPENGLDEMO_UTILS_H
 
-#include <android/log.h>
+#pragma once
+#include "../../../../../../../Library/Android/sdk/ndk/20.1.5948944/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include/android/log.h"
+#include <GLES3/gl3.h>
+#include <GLES3/gl3ext.h>
 
 #define LOGD(TAG, ...) __android_log_print(ANDROID_LOG_VERBOSE,TAG,__VA_ARGS__)
 
