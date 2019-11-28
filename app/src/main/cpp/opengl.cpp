@@ -6,11 +6,11 @@
 #include "opengl.h"
 #include "utils/Texture.h"
 #include "vertex/Cube.h"
+#include "components/Camera.h"
 
 
 const char *vShaderPath = "vtriangle.vert";
 const char *fShaderPath = "ftriangle.glsl";
-
 
 
 Shader shader;
@@ -66,6 +66,8 @@ float vertexAndColor[] = {
         0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f    // 顶部
 };
 
+
+Camera camera;
 
 mat4 rotateByX(float angle) {
     mat4 mat = glm::mat4(1.0f);
@@ -314,6 +316,7 @@ void onSurfaceCreated() {
 
     cube.create();
 
+    camera.setUp(vec3(0.0f, 1.0f, 0.0f));
     //链接我们自定义的着色器
     shader.linkProgram(vShaderPath, fShaderPath);
 
@@ -347,10 +350,23 @@ void onDrawFrame() {
 
 }
 
+
+//相机朝前看
+glm::vec3 cameraFront = vec3(0.0f, 0.0f, -1.0f);
+float cameraSpeed = 0.6f; // adjust accordingly
+
 void drawCube() {
     shader.use();
     glm::mat4 trans2 = rotateAndScale();
     shader.setMatrix4fv("transform", glm::value_ptr(trans2));
+
+//    float radius = 30.0f;
+//    float camX = sin(frameCount*0.05) * radius;
+//    float camZ = cos(frameCount*0.05) * radius;
+//    glm::mat4 view = camera.lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+//    view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+    camera.setTarget(camera.getPose() + cameraFront);
+    shader.setMatrix4fv("view", glm::value_ptr(camera.lookAt()));
 
     for (unsigned int i = 0; i < 10; i++) {
         glm::mat4 model = glm::mat4(1.0f);
@@ -362,3 +378,25 @@ void drawCube() {
     }
 }
 
+
+void onPressUp(int value) {
+    camera.setPose(camera.getPose() + cameraFront * cameraSpeed);
+}
+
+void onPressDown(int value) {
+    camera.setPose(camera.getPose() - cameraFront * cameraSpeed);
+}
+
+void onPressLeft(int value) {
+    vec3 delta = glm::normalize(glm::cross(cameraFront, camera.getUp())) * cameraSpeed;
+    camera.setPose(camera.getPose() - delta);
+}
+
+void onPressRight(int value) {
+    vec3 delta = glm::normalize(glm::cross(cameraFront, camera.getUp())) * cameraSpeed;
+    camera.setPose(camera.getPose() + delta);
+}
+
+void onTouchEvent(float x, float y, int action) {
+
+}

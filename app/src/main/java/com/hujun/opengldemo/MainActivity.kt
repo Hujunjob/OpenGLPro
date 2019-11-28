@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.hujun.opengldemo.jni.Jni
+import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -29,6 +30,11 @@ class MainActivity : AppCompatActivity() {
         val am = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         val info = am.deviceConfigurationInfo
         Log.d(TAG, "onCreate: glEsVersion = ${info.glEsVersion}")
+
+        btn_up.setOnClickListener{Jni.pressUp(1)}
+        btn_down.setOnClickListener{Jni.pressDown(1)}
+        btn_left.setOnClickListener{Jni.pressLeft(1)}
+        btn_right.setOnClickListener{Jni.pressRight(1)}
     }
 
     @TargetApi(Build.VERSION_CODES.M)

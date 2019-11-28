@@ -43,4 +43,57 @@ JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_nativeSetAssetManager
     aAssetManager = AAssetManager_fromJava(env, jassetManager);
 }
 
+
+/*
+ * Class:     com_hujun_opengldemo_jni_Jni
+ * Method:    pressUp
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_pressUp
+        (JNIEnv *, jobject, jint value){
+    onPressUp(value);
+}
+
+/*
+ * Class:     com_hujun_opengldemo_jni_Jni
+ * Method:    pressDown
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_pressDown
+        (JNIEnv *, jobject, jint value){
+    onPressDown(value);
+}
+
+/*
+ * Class:     com_hujun_opengldemo_jni_Jni
+ * Method:    pressLeft
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_pressLeft
+        (JNIEnv *, jobject, jint value){
+    onPressLeft(value);
+}
+
+/*
+ * Class:     com_hujun_opengldemo_jni_Jni
+ * Method:    pressRight
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_pressRight
+        (JNIEnv *, jobject, jint value){
+    onPressRight(value);
+}
+
+/*
+ * Class:     com_hujun_opengldemo_jni_Jni
+ * Method:    touchEvent
+ * Signature: (FFI)V
+ */
+JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_touchEvent
+        (JNIEnv *, jobject, jfloat x, jfloat y, jint action){
+    onTouchEvent(x,y,action);
+}
+
+
+
 }

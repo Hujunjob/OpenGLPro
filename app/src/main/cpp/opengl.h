@@ -18,5 +18,14 @@ void onSurfaceCreated();
 
 void onDrawFrame();
 
+void onPressUp(int value);
+
+void onPressDown(int value);
+
+void onPressLeft(int value);
+
+void onPressRight(int value);
+
+void onTouchEvent(float x,float y,int action);
 
 #endif //OPENGLDEMO_OPENGL_H

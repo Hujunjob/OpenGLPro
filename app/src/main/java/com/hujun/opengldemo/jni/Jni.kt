@@ -24,4 +24,10 @@ object Jni {
     external fun onSurfaceCreated()
 
     external fun nativeSetAssetManager(assetManager: AssetManager)
+
+    external fun pressUp(value: Int)
+    external fun pressDown(value: Int)
+    external fun pressLeft(value: Int)
+    external fun pressRight(value: Int)
+    external fun touchEvent(x:Float,y:Float,action:Int);
 }
