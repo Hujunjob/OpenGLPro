@@ -29,5 +29,11 @@ object Jni {
     external fun pressDown(value: Int)
     external fun pressLeft(value: Int)
     external fun pressRight(value: Int)
-    external fun touchEvent(x:Float,y:Float,action:Int);
+    external fun touchEvent(x:Float,y:Float,action:Int)
+
+    external fun yaw(value: Int)
+    external fun pitch(value: Int)
+    external fun roll(value: Int)
+
+    external fun scroll(value: Float)
 }

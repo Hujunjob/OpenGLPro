@@ -87,5 +87,12 @@ JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_pressRight
 JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_touchEvent
         (JNIEnv *, jobject, jfloat, jfloat, jint);
 
-
+JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_yaw
+        (JNIEnv *, jobject, jint);
+JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_pitch
+        (JNIEnv *, jobject, jint);
+JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_roll
+        (JNIEnv *, jobject, jint);
+JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_scroll
+        (JNIEnv *, jobject, jfloat);
 }

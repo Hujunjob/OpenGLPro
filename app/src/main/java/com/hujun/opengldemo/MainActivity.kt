@@ -7,6 +7,8 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.MotionEvent
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.hujun.opengldemo.jni.Jni
 import kotlinx.android.synthetic.main.activity_main.*
@@ -31,10 +33,22 @@ class MainActivity : AppCompatActivity() {
         val info = am.deviceConfigurationInfo
         Log.d(TAG, "onCreate: glEsVersion = ${info.glEsVersion}")
 
-        btn_up.setOnClickListener{Jni.pressUp(1)}
-        btn_down.setOnClickListener{Jni.pressDown(1)}
-        btn_left.setOnClickListener{Jni.pressLeft(1)}
-        btn_right.setOnClickListener{Jni.pressRight(1)}
+        btn_up.setOnClickListener { Jni.pressUp(1) }
+        btn_down.setOnClickListener { Jni.pressDown(1) }
+        btn_left.setOnClickListener { Jni.pressLeft(1) }
+        btn_right.setOnClickListener { Jni.pressRight(1) }
+
+        btn_yaw.setOnClickListener { Jni.yaw(1) }
+        btn_pitch.setOnClickListener { Jni.pitch(1) }
+        btn_roll.setOnClickListener { Jni.roll(1) }
+
+        btn_zoomin.setOnClickListener { Jni.scroll(-5.0f) }
+        btn_zoomout.setOnClickListener { Jni.scroll(5.0f) }
+
+        btn_up.setOnHoverListener { _, _ ->
+            Jni.pressUp(1)
+            true
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.M)

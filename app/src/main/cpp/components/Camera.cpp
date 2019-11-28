@@ -16,6 +16,8 @@ Camera::Camera() {
     right = glm::normalize(glm::cross(tUp, direction));
 
     up = glm::cross(direction, right);
+
+    fov = 45.0f;
 }
 
 
@@ -41,4 +43,23 @@ mat4 Camera::lookAt() {
 
 mat4 Camera::lookAt(vec3 pose, vec3 target, vec3 up) {
     return glm::lookAt(pose, target, up);
+}
+
+void Camera::scroll(float value) {
+    fov += value;
+}
+
+mat4 Camera::projection() {
+    float respect = 720.0f / 1280.0f;
+    float near = 0.1f;
+    float far = 100.0f;
+    return glm::perspective(glm::radians(this->fov), respect, near, far);
+}
+
+vec3 Camera::getDirection() {
+    vec3 front;
+    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    front.y = sin(glm::radians(pitch));
+    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    return glm::normalize(front);
 }

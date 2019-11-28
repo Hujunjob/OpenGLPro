@@ -20,37 +20,64 @@ private:
     //相机看的目标
     vec3 cameraTarget;
 
+    float fov;
+
+    float yaw=-90.0f;
+    float roll;
+    float pitch;
+
 public:
     Camera();
+
+    ~Camera();
+
     /**
      * 设置相机的位置
      * @param pose 相机位置
      */
     void setPose(vec3 pose);
-    vec3 getPose(){
+
+    vec3 getPose() {
         return pose;
     }
+
     /**
      * 设置相机看的目标
      * @param target 目标位置
      */
     void setTarget(vec3 target);
-    vec3 getTarget(){ return cameraTarget;}
+
+    vec3 getTarget() { return cameraTarget; }
+
     /**
      * 设置相机的上向量
      * @param up
      */
     void setUp(vec3 up);
-    vec3 getUp(){
+
+    vec3 getUp() {
         return up;
     }
+
+    vec3 getDirection();
+
     /**
      * 得到相机的观察矩阵
      * @return 观察矩阵
      */
     mat4 lookAt();
-    mat4 lookAt(vec3 pose,vec3 target,vec3 up);
-    ~Camera();
+
+    mat4 lookAt(vec3 pose, vec3 target, vec3 up);
+
+    mat4 projection();
+
+    void setYaw(int angle) { yaw += angle; }
+
+    void setPitch(int angle) { pitch += angle; }
+
+    void setRoll(int angle) { roll += angle; }
+
+    void scroll(float value);
 };
 
 

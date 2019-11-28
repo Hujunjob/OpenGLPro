@@ -28,4 +28,12 @@ void onPressRight(int value);
 
 void onTouchEvent(float x,float y,int action);
 
+void yaw(int value);
+
+void pitch(int value);
+
+void roll(int value);
+
+void scroll(float value);
+
 #endif //OPENGLDEMO_OPENGL_H

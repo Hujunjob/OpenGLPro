@@ -50,7 +50,7 @@ JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_nativeSetAssetManager
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_pressUp
-        (JNIEnv *, jobject, jint value){
+        (JNIEnv *, jobject, jint value) {
     onPressUp(value);
 }
 
@@ -60,7 +60,7 @@ JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_pressUp
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_pressDown
-        (JNIEnv *, jobject, jint value){
+        (JNIEnv *, jobject, jint value) {
     onPressDown(value);
 }
 
@@ -70,7 +70,7 @@ JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_pressDown
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_pressLeft
-        (JNIEnv *, jobject, jint value){
+        (JNIEnv *, jobject, jint value) {
     onPressLeft(value);
 }
 
@@ -80,7 +80,7 @@ JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_pressLeft
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_pressRight
-        (JNIEnv *, jobject, jint value){
+        (JNIEnv *, jobject, jint value) {
     onPressRight(value);
 }
 
@@ -90,10 +90,27 @@ JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_pressRight
  * Signature: (FFI)V
  */
 JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_touchEvent
-        (JNIEnv *, jobject, jfloat x, jfloat y, jint action){
-    onTouchEvent(x,y,action);
+        (JNIEnv *, jobject, jfloat x, jfloat y, jint action) {
+    onTouchEvent(x, y, action);
 }
 
+JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_yaw
+        (JNIEnv *, jobject, jint value) {
+    yaw(value);
+}
+JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_pitch
+        (JNIEnv *, jobject, jint value) {
+    pitch(value);
+}
 
+JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_roll
+        (JNIEnv *, jobject, jint value) {
+    roll(value);
+}
+
+JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_scroll
+        (JNIEnv *, jobject, jfloat value){
+    scroll(value);
+}
 
 }

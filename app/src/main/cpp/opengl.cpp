@@ -238,7 +238,7 @@ glm::mat4 rotateAndScale2() {
     gettimeofday(&xTime, nullptr);
 
     long long xFactor = 1;
-    long long now = (long long) ((xFactor * xTime.tv_sec * 1000) + (xTime.tv_usec / 1000));
+    long long now = (xFactor * xTime.tv_sec * 1000) + (xTime.tv_usec / 1000);
 
 //    time.tv_usec
     trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
@@ -352,7 +352,7 @@ void onDrawFrame() {
 
 
 //相机朝前看
-glm::vec3 cameraFront = vec3(0.0f, 0.0f, -1.0f);
+//glm::vec3 cameraFront = vec3(0.0f, 0.0f, -1.0f);
 float cameraSpeed = 0.6f; // adjust accordingly
 
 void drawCube() {
@@ -365,8 +365,10 @@ void drawCube() {
 //    float camZ = cos(frameCount*0.05) * radius;
 //    glm::mat4 view = camera.lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 //    view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+    vec3 cameraFront = camera.getDirection();
     camera.setTarget(camera.getPose() + cameraFront);
     shader.setMatrix4fv("view", glm::value_ptr(camera.lookAt()));
+    shader.setMatrix4fv("projection",glm::value_ptr(camera.projection()));
 
     for (unsigned int i = 0; i < 10; i++) {
         glm::mat4 model = glm::mat4(1.0f);
@@ -380,23 +382,40 @@ void drawCube() {
 
 
 void onPressUp(int value) {
-    camera.setPose(camera.getPose() + cameraFront * cameraSpeed);
+    camera.setPose(camera.getPose() + camera.getDirection() * cameraSpeed);
 }
 
 void onPressDown(int value) {
-    camera.setPose(camera.getPose() - cameraFront * cameraSpeed);
+    camera.setPose(camera.getPose() - camera.getDirection() * cameraSpeed);
 }
 
 void onPressLeft(int value) {
-    vec3 delta = glm::normalize(glm::cross(cameraFront, camera.getUp())) * cameraSpeed;
+    vec3 delta = glm::normalize(glm::cross(camera.getDirection(), camera.getUp())) * cameraSpeed;
     camera.setPose(camera.getPose() - delta);
 }
 
 void onPressRight(int value) {
-    vec3 delta = glm::normalize(glm::cross(cameraFront, camera.getUp())) * cameraSpeed;
+    vec3 delta = glm::normalize(glm::cross(camera.getDirection(), camera.getUp())) * cameraSpeed;
     camera.setPose(camera.getPose() + delta);
 }
 
 void onTouchEvent(float x, float y, int action) {
 
+}
+
+
+void yaw(int value){
+    camera.setYaw(1);
+}
+
+void pitch(int value){
+    camera.setPitch(1);
+}
+
+void roll(int value){
+    camera.setRoll(1);
+}
+
+void scroll(float value){
+    camera.scroll(value);
 }

@@ -45,5 +45,47 @@
         android:layout_width="60dp"
         android:layout_height="40dp"/>
 
+    <Button
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:id="@+id/btn_yaw"
+        android:text="yaw"
+        android:layout_width="60dp"
+        android:layout_height="40dp"/>
+
+    <Button
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/btn_yaw"
+        android:id="@+id/btn_pitch"
+        android:text="pit"
+        android:layout_width="60dp"
+        android:layout_height="40dp"/>
+
+
+    <Button
+        app:layout_constraintLeft_toRightOf="@+id/btn_yaw"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:id="@+id/btn_roll"
+        android:text="roll"
+        android:layout_width="60dp"
+        android:layout_height="40dp"/>
+
+
+    <Button
+        app:layout_constraintBottom_toTopOf="@+id/btn_left"
+        app:layout_constraintLeft_toLeftOf="@+id/btn_left"
+        android:id="@+id/btn_zoomin"
+        android:text="缩小"
+        android:layout_width="60dp"
+        android:layout_height="40dp"/>
+
+    <Button
+        app:layout_constraintBottom_toTopOf="@+id/btn_left"
+        app:layout_constraintRight_toRightOf="@+id/btn_right"
+        android:id="@+id/btn_zoomout"
+        android:text="放大"
+        android:layout_width="60dp"
+        android:layout_height="40dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
