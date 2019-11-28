@@ -69,7 +69,7 @@ void Camera::init() {
 
     up = glm::cross(direction, right);
 
-    fov = 45.0f;
+    fov = FOV;
 
-    yaw = -90.0f;
+    yaw = YAW;
 }

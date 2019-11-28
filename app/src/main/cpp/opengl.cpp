@@ -315,8 +315,8 @@ void onSurfaceCreated() {
 //    VAO = generateVAO();
 
     cube.create();
-
     camera.setUp(vec3(0.0f, 1.0f, 0.0f));
+
     //链接我们自定义的着色器
     shader.linkProgram(vShaderPath, fShaderPath);
 
@@ -344,6 +344,12 @@ void onDrawFrame() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     LOGD("OpenGL", "onDrawFrame");
 
+    //更新相机的view矩阵和投影矩阵
+    vec3 cameraFront = camera.getDirection();
+    camera.setTarget(camera.getPose() + cameraFront);
+    shader.setMatrix4fv("view", glm::value_ptr(camera.lookAt()));
+    shader.setMatrix4fv("projection",glm::value_ptr(camera.projection()));
+
 //    drawTriangle();
 //    drawRectangle();
     drawCube();
@@ -352,23 +358,13 @@ void onDrawFrame() {
 
 
 //相机朝前看
-//glm::vec3 cameraFront = vec3(0.0f, 0.0f, -1.0f);
 float cameraSpeed = 0.6f; // adjust accordingly
 
 void drawCube() {
     shader.use();
+    //让立方体一直旋转
     glm::mat4 trans2 = rotateAndScale();
     shader.setMatrix4fv("transform", glm::value_ptr(trans2));
-
-//    float radius = 30.0f;
-//    float camX = sin(frameCount*0.05) * radius;
-//    float camZ = cos(frameCount*0.05) * radius;
-//    glm::mat4 view = camera.lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
-//    view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
-    vec3 cameraFront = camera.getDirection();
-    camera.setTarget(camera.getPose() + cameraFront);
-    shader.setMatrix4fv("view", glm::value_ptr(camera.lookAt()));
-    shader.setMatrix4fv("projection",glm::value_ptr(camera.projection()));
 
     for (unsigned int i = 0; i < 10; i++) {
         glm::mat4 model = glm::mat4(1.0f);

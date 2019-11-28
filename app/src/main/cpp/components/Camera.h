@@ -7,6 +7,13 @@
 
 #include "../utils/utils.h"
 
+//相机默认值
+const float FOV = 45.0f;
+const float PITCH = 0.0f;
+const float ROLL = 0.0f;
+const float YAW = -90.0f;
+
+
 class Camera {
 private:
     //相机位置
