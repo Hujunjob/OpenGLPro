@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity() {
 
         btn_zoomin.setOnClickListener { Jni.scroll(-5.0f) }
         btn_zoomout.setOnClickListener { Jni.scroll(5.0f) }
+        btn_reset.setOnClickListener { Jni.reset() }
 
         btn_up.setOnHoverListener { _, _ ->
             Jni.pressUp(1)

@@ -36,4 +36,6 @@ object Jni {
     external fun roll(value: Int)
 
     external fun scroll(value: Float)
+
+    external fun reset()
 }

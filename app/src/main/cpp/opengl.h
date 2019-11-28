@@ -36,4 +36,6 @@ void roll(int value);
 
 void scroll(float value);
 
+void reset();
+
 #endif //OPENGLDEMO_OPENGL_H

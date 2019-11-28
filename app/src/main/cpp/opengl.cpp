@@ -419,3 +419,7 @@ void roll(int value){
 void scroll(float value){
     camera.scroll(value);
 }
+
+void reset(){
+    camera.reset();
+}

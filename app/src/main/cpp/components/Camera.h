@@ -22,9 +22,10 @@ private:
 
     float fov;
 
-    float yaw=-90.0f;
+    float yaw;
     float roll;
     float pitch;
+    void init();
 
 public:
     Camera();
@@ -78,6 +79,8 @@ public:
     void setRoll(int angle) { roll += angle; }
 
     void scroll(float value);
+
+    void reset();
 };
 
 

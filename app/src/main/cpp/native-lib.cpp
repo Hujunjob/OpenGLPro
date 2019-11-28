@@ -113,4 +113,9 @@ JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_scroll
     scroll(value);
 }
 
+JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_reset
+        (JNIEnv *, jobject){
+    reset();
+}
+
 }

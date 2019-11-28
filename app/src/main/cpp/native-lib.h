@@ -95,4 +95,6 @@ JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_roll
         (JNIEnv *, jobject, jint);
 JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_scroll
         (JNIEnv *, jobject, jfloat);
+JNIEXPORT void JNICALL Java_com_hujun_opengldemo_jni_Jni_reset
+        (JNIEnv *, jobject);
 }
